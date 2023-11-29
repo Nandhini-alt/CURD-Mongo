@@ -6,12 +6,13 @@ from .models import Students
 from .serializers import StudentSerializer
 from rest_framework.exceptions import NotFound
 from django.shortcuts import get_object_or_404
+from bson import ObjectId
 
 class StudentView(APIView):
-    def get(self, request, id=None):
-        if id is not None:
+    def get(self, request, _id=None):
+        if _id is not None:
             try:
-                student = Students.objects.get(id=id)
+                student = Students.objects.get(_id=ObjectId(_id))
                 serializer = StudentSerializer(student)
                 return Response({'Students': serializer.data}, status=200)
             except Students.DoesNotExist:
@@ -30,10 +31,10 @@ class StudentView(APIView):
             return Response({'data':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
 
-    def put(self, request, id=None):
+    def put(self, request, _id=None):
         if id is not None:
             try:
-                student = Students.objects.get(id=id)
+                student = Students.objects.get(_id=ObjectId(_id))
                 serializer = StudentSerializer(student, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
@@ -44,7 +45,7 @@ class StudentView(APIView):
         else:
             return Response({'error': 'Please provide an ID for Updating an student'}, status=400)
     
-    def delete(self, request, id=None):
-        result = get_object_or_404(Students, id=id)
+    def delete(self, request, _id=None):
+        result = get_object_or_404(Students, _id=ObjectId(_id))
         result.delete()
         return Response({'message':'Record Deleted successfully'})
